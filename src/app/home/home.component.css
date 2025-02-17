@@ -1,0 +1,15 @@
+.edit-btn{
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+}
+
+.edit-btn mat-icon{
+    font-size: initial !important;
+    margin-left: -7px !important;
+    overflow: initial !important;
+}
+
+.mat-form-field {
+    width: 100%;
+  }

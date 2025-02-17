@@ -1,0 +1,120 @@
+<!-- <mat-form-field>
+    <mat-label>Filter</mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input>
+  </mat-form-field>
+   -->
+<!-- <table mat-table [dataSource]="dataSource || []" class="mat-elevation-z8">
+  
+    <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let element">
+            <button mat-fab class="edit-btn" (click)="onEdit(element)">
+                <mat-icon>edit</mat-icon>
+            </button>
+        </td>
+      </ng-container>
+
+   
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef> ID </th>
+      <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+    </ng-container>
+  
+  
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Name </th>
+      <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+    </ng-container>
+  
+    
+    <ng-container matColumnDef="username">
+      <th mat-header-cell *matHeaderCellDef> Username </th>
+      <td mat-cell *matCellDef="let element"> {{element.username}} </td>
+    </ng-container>
+  
+    
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef> Email </th>
+      <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+    </ng-container>
+  
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+    </tr> 
+  </table>
+  
+  <mat-paginator [length] = "dataSource ? dataSource.data.length : 0" [pageSize] = "5" [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator> -->
+
+  <table mat-table [dataSource]="dataSource || []" class="mat-elevation-z8">
+
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef> ID </th>
+      <td mat-cell *matCellDef="let row; let i = index">
+        {{ users.at(i).get('id')?.value }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Name </th>
+      <td mat-cell *matCellDef="let row; let i = index">
+        <ng-container *ngIf="!users.at(i).get('isEditable')?.value; else editName">
+          {{ users.at(i).get('name')?.value }}
+        </ng-container>
+        <ng-template #editName>
+          <input matInput [formControl]="getFormControl(i, 'name')" />
+        </ng-template>
+      </td>
+    </ng-container>
+
+    <!-- Username Column -->
+    <ng-container matColumnDef="username">
+      <th mat-header-cell *matHeaderCellDef> Username </th>
+      <td mat-cell *matCellDef="let row; let i = index">
+        <ng-container *ngIf="!users.at(i).get('isEditable')?.value; else editUsername">
+          {{ users.at(i).get('username')?.value }}
+        </ng-container>
+        <ng-template #editUsername>
+          <input matInput [formControl]="getFormControl(i, 'username')" />
+        </ng-template>
+      </td>
+    </ng-container>
+
+    <!-- Email Column -->
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef> Email </th>
+      <td mat-cell *matCellDef="let row; let i = index">
+        <ng-container *ngIf="!users.at(i).get('isEditable')?.value; else editEmail">
+          {{ users.at(i).get('email')?.value }}
+        </ng-container>
+        <ng-template #editEmail>
+          <input matInput [formControl]="getFormControl(i, 'email')"/>
+        </ng-template>
+      </td>
+    </ng-container>
+
+    <!-- Actions Column -->
+    <ng-container matColumnDef="action">
+      <th mat-header-cell *matHeaderCellDef> Actions </th>
+      <td mat-cell *matCellDef="let row; let i = index">
+        <ng-container *ngIf="!users.at(i).get('isEditable')?.value; else editActions">
+          <button mat-button color="primary" (click)="editRow(i)">Edit</button>
+        </ng-container>
+        <ng-template #editActions>
+          <button mat-button color="accent" (click)="saveRow(i)">Save</button>
+          <button mat-button color="warn" (click)="cancelEdit(i, row)">Cancel</button>
+        </ng-template>
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+    <!-- Row shown when there is no matching data. -->
+    <!-- <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="4">
+          No data matching the filter "{{input.value}}"
+        </td>
+      </tr> -->
+  </table>
