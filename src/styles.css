@@ -30,4 +30,11 @@ table{
 .mat-mdc-cell:nth-child(1){
     width: 20px !important;
 }
+ .mat-mdc-card{
+    padding: 12px !important;
+    margin: 12px !important;
+ }
 
+ .mat-mdc-text-field-wrapper{
+    height: 50px !important;
+ }

@@ -4,7 +4,7 @@ import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { User } from '../models/user';
 import { MatSort } from '@angular/material/sort';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
@@ -16,27 +16,27 @@ export class HomeComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   userData?: User[] = [];
-  dataSource!: MatTableDataSource<AbstractControl>;
+  dataSource!: MatTableDataSource<FormGroup>;
   displayedColumns: string[] = ['id', 'name', 'username', 'email', 'action'];
   userForm!: FormGroup;
   isEditableNew: boolean = true;
-  isLoading = true;
+  filterValue: string = '';
+  filteredUsers: User[] = [];
   constructor(private userService: UserService, private fb: FormBuilder, private _snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
     this.userService.toFetchUser().subscribe((x) => {
       this.userData = x;
-      console.log(this.userData);
+      this.filteredUsers = [...this.userData] || [];
       this.loadUsers(this.userData);
+
     });
 
     this.userForm = this.fb.group({
       users: this.fb.array([]),
     });
 
-    
   }
-
 
   get users(): FormArray {
     return this.userForm.get('users') as FormArray;
@@ -60,10 +60,21 @@ export class HomeComponent implements OnInit {
       );
     });
 
-    this.dataSource = new MatTableDataSource(this.users.controls)
-    this.dataSource!.paginator = this.paginator!;
-    this.dataSource!.sort = this.sort!;
+    this.dataSource = new MatTableDataSource(this.users.controls as FormGroup[]);
+
   }
+
+  applyFilter(): void {
+    const normalizedFilter = this.filterValue.trim().toLowerCase();
+  
+    const filteredUsers = this.userData!.filter(user => {
+      const searchText = `${user.id} ${user.name} ${user.username} ${user.email}`.toLowerCase();
+      return searchText.includes(normalizedFilter);
+    });
+  
+    this.loadUsers(filteredUsers);
+  }
+
 
   editRow(index: number) {
     this.users.at(index).get('isEditable')?.setValue(true);
@@ -71,19 +82,21 @@ export class HomeComponent implements OnInit {
 
   saveRow(index: number) {
     this.users.at(index).get('isEditable')?.setValue(false);
-    this.userService.toUpdateUser(this.users.value[index].id, this.users.value[index]).subscribe(x => console.log(x))
-    this._snackBar.open('Failed to fetch data', 'Dismiss',{
-      panelClass: 'notif-success'
+    this.userService.toUpdateUser(this.users.value[index].id, this.users.value[index]).subscribe(x => {
+      this._snackBar.open('Data Updated Successfully', 'Dismiss');
     });
+
   }
 
-  cancelEdit(index: number, val: any) {
+  cancelEdit(index: number) {
     this.users.at(index).get('isEditable')?.setValue(false);
-    if(this.userData){
-      this.users.at(index).get('name')?.setValue(this.userData[index].name);
-      this.users.at(index).get('username')?.setValue(this.userData[index].username);
-      this.users.at(index).get('email')?.setValue(this.userData[index].email);
-    }
-    
+    const originalUser = this.userData![index];
+    this.users.at(index).patchValue({
+      name: originalUser.name,
+      username: originalUser.username,
+      email: originalUser.email,
+      isEditable: false,
+    });
+
   }
 }

@@ -17,7 +17,6 @@ export class GlobalHttpInterceptorService implements HttpInterceptor {
  
     return next.handle(req).pipe(
       catchError((error) => {
-        console.log('error is intercept')
         this._snackBar.open('Failed to fetch data', 'Dismiss',{
           panelClass: 'notif-success'
         });

@@ -28,7 +28,7 @@ export class UserService {
     }))
   }
 
-  toUpdateUser(id: number, data: any){
+  toUpdateUser(id: number, data: User){
     return this.http.patch<User[]>(`${this.apiUrl}/${id}`, data);
   }
     
